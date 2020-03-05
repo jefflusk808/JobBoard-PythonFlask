@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/bulma.min.css')}}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/app.css')}}" />
+    <link href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" rel="stylesheet"/>
+    {% from '_macros.html' import show_job, show_jobs, show_employerlist with context %}
+    <title>Job Board</title>
+</head>
+<body>
+<div class="field is-grouped">
+    <div class="control">
+        <a href="{{  url_for('jobs') }}" class="button is-text">Home</a>
+    </div>
+    <div>
+        <a href="{{  url_for('newjob') }}" class="button is-text">Create a Job</a> <!--Need to add in href-->
+    </div>
+</div>
+    <div class="container top">
+        <div class="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+</div>
+</body>
+</html>
