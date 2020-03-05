@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+    <div class="columns">
+        <div class="column">
+            <h1>Jobs</h1>
+        </div>
+        <div class="column is-one-fifth">
+        </div>
+    </div>
+
+    <!-- calls iterable macro from _macros -->
+    {{ show_jobs(jobs) }}
+{% endblock %}
