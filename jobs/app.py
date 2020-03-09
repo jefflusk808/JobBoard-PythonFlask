@@ -7,21 +7,19 @@ import dash_html_components as html
 from dashboard import dashapp
 
 
-#added in the dash application 3.6.20
 
+#declaring db & server variables
 PATH = "db/jobs.sqlite"
-#app = Flask(__name__)
+
+
 server = Flask(__name__)
-
-#creating dash app
-#app = dash.Dash(__name__, server=server, routes_pathname_prefix='/dash/')
-
-#calls the function in the dashapp file to start up the dash app
+#calls the function in the dashapp file to start up the dash app, keeping it in a module fashion
 app = dashapp.Add_Dash(server)
+
 
 #rending dash app
 @app.route('/dash')
-def renderDash():
+def renderDashApp():
     return render_template('dashboard.html', dash_url=dashapp.url_base)
 
 ##renders the index file
