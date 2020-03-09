@@ -1,20 +1,39 @@
 from flask import Flask, render_template, g, request, redirect, url_for
 import sqlite3
 import datetime
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dashboard import dashapp
+
+
+#added in the dash application 3.6.20
 
 PATH = "db/jobs.sqlite"
-app = Flask(__name__)
+#app = Flask(__name__)
+server = Flask(__name__)
 
+#creating dash app
+#app = dash.Dash(__name__, server=server, routes_pathname_prefix='/dash/')
+
+#calls the function in the dashapp file to start up the dash app
+app = dashapp.Add_Dash(server)
+
+#rending dash app
+@app.route('/dash')
+def renderDash():
+    return render_template('dashboard.html', dash_url=dashapp.url_base)
 
 ##renders the index file
-@app.route('/')
-@app.route('/jobs')
+@server.route('/')
+@server.route('/jobs')
 def jobs():
     jobs = execute_sql('SELECT job.id, job.title, job.description, job.salary, employer.id as employer_id, employer.name as employer_name FROM job JOIN employer ON employer.id = job.employer_id')
     return render_template('index.html', jobs=jobs)
 
+
 ##new job form
-@app.route('/newjob', methods=['GET', 'POST'])
+@server.route('/newjob', methods=['GET', 'POST'])
 def newjob():
     employers = execute_sql('SELECT * FROM employer')
 
@@ -34,7 +53,7 @@ def newjob():
     return render_template('newjob.html', employers=employers)
 
 
-@app.route('/job/<job_id>')
+@server.route('/job/<job_id>')
 def job(job_id):
     job = execute_sql('SELECT job.id, job.title, job.description, job.salary, employer.id as employer_id, employer.name as employer_name FROM job JOIN employer ON employer.id = job.employer_id WHERE job.id = ?',
                       [job_id],
@@ -43,7 +62,7 @@ def job(job_id):
     return render_template('job.html', job=job)
 
 
-@app.route('/employer/<employer_id>')
+@server.route('/employer/<employer_id>')
 def employer(employer_id):
     employer = execute_sql('SELECT * FROM employer WHERE id=?',
                            [employer_id],
@@ -56,7 +75,7 @@ def employer(employer_id):
     return render_template('employer.html', employer=employer, jobs=jobs, reviews=reviews)
 
 
-@app.route('/employer/<employer_id>/review', methods=['GET', 'POST'])
+@server.route('/employer/<employer_id>/review', methods=['GET', 'POST'])
 def review(employer_id):
     if request.method == 'POST':
         review = request.form['review']
@@ -94,9 +113,13 @@ def execute_sql(sql, values=(), commit=False, single=False):
 
 
 ##Called anytime the application is "torndown", should be where the connection is closed
-@app.teardown_appcontext
+@server.teardown_appcontext
 def close_connection(exception):
     connection = getattr(g, '_connection', None)
     if connection is not None:
         connection.close()
     return connection
+
+
+if __name__ == "__main__":
+    app.run(debug = True)
